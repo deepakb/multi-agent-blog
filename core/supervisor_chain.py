@@ -6,11 +6,12 @@ from langchain.output_parsers.openai_functions import JsonOutputFunctionsParser
 def get_supervisor_chain(llm, members, options):
     system_prompt = (
         "You are a supervisor tasked with managing a conversation between the"
-        " following workers:  {members}. Given the following user request,"
+        " following workers: {members}. Given the following user request,"
         " respond with the worker to act next. Each worker will perform a"
         " task and respond with their results and status. When finished,"
         " respond with FINISH."
     )
+
     function_def = {
         "name": "route",
         "description": "Select the next role.",
@@ -28,6 +29,7 @@ def get_supervisor_chain(llm, members, options):
             "required": ["next"],
         },
     }
+
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_prompt),
@@ -38,7 +40,10 @@ def get_supervisor_chain(llm, members, options):
                 " Or should we FINISH? Select one of: {options}",
             ),
         ]
-    ).partial(options=str(options), members=", ".join(members))
+    ).partial(
+        options=str(options),
+        members=", ".join(members)
+    )
 
     supervisor_chain = (
         prompt
